@@ -1,0 +1,13 @@
+{
+  "name": "cron-tipos-cambio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cron diario que obtiene tipos de cambio (boliviano y otras monedas) contra el dólar y los guarda en JSON",
+  "scripts": {
+    "fetch": "node scripts/fetch-rates.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
