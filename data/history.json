@@ -16,7 +16,7 @@
     }
   },
   {
-    "updated_at": "2026-07-29T20:24:15.291Z",
+    "updated_at": "2026-07-29T20:29:10.268Z",
     "base": "USD",
     "source": "https://open.er-api.com/v6/latest/USD",
     "rates": {
@@ -30,12 +30,102 @@
       "MXN": 17.447885,
       "EUR": 0.878652
     },
+    "bob_oficial": {
+      "compra": 11.8,
+      "venta": 11.9
+    },
     "bob_fuente": "Banco Central de Bolivia (bcb.gob.bo)",
+    "bob_oficial_bancos": [
+      {
+        "entidad": "BANCO FORTALEZA",
+        "compra": 12.07,
+        "monto_usd": 2000224.0,
+        "transacciones": 7
+      },
+      {
+        "entidad": "BANCO FIE",
+        "compra": 12.06,
+        "monto_usd": 3025087.0,
+        "transacciones": 24
+      },
+      {
+        "entidad": "BANCO MERCANTIL SANTA CRUZ",
+        "compra": 11.91,
+        "monto_usd": 4864421.0,
+        "transacciones": 207
+      },
+      {
+        "entidad": "BANCO ECONÓMICO",
+        "compra": 11.83,
+        "monto_usd": 1863927.0,
+        "transacciones": 37
+      },
+      {
+        "entidad": "BANCO DE CRÉDITO",
+        "compra": 11.78,
+        "monto_usd": 1318312.0,
+        "transacciones": 68
+      },
+      {
+        "entidad": "BANCO BISA",
+        "compra": 11.77,
+        "monto_usd": 8944464.0,
+        "transacciones": 82
+      },
+      {
+        "entidad": "BANCO SOLIDARIO",
+        "compra": 11.74,
+        "monto_usd": 2661721.0,
+        "transacciones": 43
+      },
+      {
+        "entidad": "BANCO GANADERO",
+        "compra": 11.73,
+        "monto_usd": 11345343.0,
+        "transacciones": 279
+      },
+      {
+        "entidad": "BANCO NACIONAL DE BOLIVIA",
+        "compra": 11.55,
+        "monto_usd": 2514828.0,
+        "transacciones": 264
+      },
+      {
+        "entidad": "BANCO PYME DE LA COMUNIDAD",
+        "compra": 11.54,
+        "monto_usd": 426.0,
+        "transacciones": 3
+      },
+      {
+        "entidad": "BANCO UNION",
+        "compra": 11.54,
+        "monto_usd": 42014.0,
+        "transacciones": 48
+      },
+      {
+        "entidad": "BANCO DE LA NACIÓN ARGENTINA",
+        "compra": 11.51,
+        "monto_usd": 24807.0,
+        "transacciones": 26
+      },
+      {
+        "entidad": "BANCO PRODEM",
+        "compra": 11.44,
+        "monto_usd": 5435.0,
+        "transacciones": 16
+      },
+      {
+        "entidad": "BANCO PYME ECOFUTURO",
+        "compra": 11.39,
+        "monto_usd": 242466.0,
+        "transacciones": 8
+      }
+    ],
     "bob_paralelo": {
       "source": "Binance P2P (USDT/BOB)",
-      "compra": 11.887,
+      "compra": 11.886,
       "compra_muestras": 10,
-      "venta": 11.916,
+      "venta": 11.917,
       "venta_muestras": 10,
       "value": 11.9015
     },
