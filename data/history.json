@@ -16,7 +16,7 @@
     }
   },
   {
-    "updated_at": "2026-07-29T19:19:23.465Z",
+    "updated_at": "2026-07-29T20:24:15.291Z",
     "base": "USD",
     "source": "https://open.er-api.com/v6/latest/USD",
     "rates": {
@@ -33,13 +33,13 @@
     "bob_fuente": "Banco Central de Bolivia (bcb.gob.bo)",
     "bob_paralelo": {
       "source": "Binance P2P (USDT/BOB)",
-      "compra": 11.908,
+      "compra": 11.887,
       "compra_muestras": 10,
-      "venta": 11.932,
+      "venta": 11.916,
       "venta_muestras": 10,
-      "value": 11.92
+      "value": 11.9015
     },
-    "bob_brecha_pct": 1.02,
+    "bob_brecha_pct": 0.86,
     "bob_oficial_var_pct": 6.72
   }
 ]
