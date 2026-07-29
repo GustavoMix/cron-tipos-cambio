@@ -21,7 +21,7 @@ jobs:
           python-version: '3.12'
 
       - name: Obtener tipos de cambio
-        run: python3 scripts/fetch_rates.py
+        run: python3 scripts/obtener_tipos_cambio.py
 
       - name: Commitear y pushear cambios
         run: |
