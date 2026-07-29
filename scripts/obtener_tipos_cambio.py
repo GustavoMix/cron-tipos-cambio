@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -7,6 +8,7 @@ from pathlib import Path
 
 API_URL = "https://open.er-api.com/v6/latest/USD"
 BCB_OFICIAL_URL = "https://apibcb.cucu.bo/api/v1/tc/oficial"
+BCB_BANCOS_URL = "https://www.bcb.gob.bo/tco_reporte_ultima_cotizacion.php"
 BINANCE_P2P_URL = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 HISTORIAL_DIAS = 90
 
@@ -55,9 +57,9 @@ def fetch_rates() -> dict:
     }
 
 
-def fetch_bcb_oficial() -> float | None:
-    """Tipo de cambio oficial del boliviano, publicado por el Banco Central de Bolivia
-    (vía la API pública de CUCU, que republica en JSON las cifras del BCB)."""
+def fetch_bcb_oficial() -> dict | None:
+    """Tipo de cambio oficial del boliviano (compra y venta), publicado por el Banco
+    Central de Bolivia (vía la API pública de CUCU, que republica en JSON las cifras del BCB)."""
     try:
         with urllib.request.urlopen(BCB_OFICIAL_URL, timeout=30) as response:
             if response.status != 200:
@@ -68,12 +70,76 @@ def fetch_bcb_oficial() -> float | None:
         print(f"Advertencia: no se pudo consultar la API del BCB: {exc}")
         return None
 
-    value = data.get("tc_oficial", {}).get("compra")
-    if value is None:
+    tc_oficial = data.get("tc_oficial", {})
+    compra = tc_oficial.get("compra")
+    if compra is None:
         print("Advertencia: la API del BCB no devolvió el valor esperado")
         return None
 
-    return float(value)
+    venta = tc_oficial.get("venta")
+    return {
+        "compra": float(compra),
+        "venta": float(venta) if venta is not None else None,
+    }
+
+
+def _parse_numero_bo(texto: str) -> float | None:
+    """Convierte números en formato boliviano ('11,80', '8.944.464') a float."""
+    texto = texto.strip().replace("&nbsp;", "").replace("\xa0", "")
+    if not texto:
+        return None
+    return float(texto.replace(".", "").replace(",", "."))
+
+
+def fetch_bcb_bancos() -> list[dict] | None:
+    """Tipo de cambio referencial de compra por entidad financiera. El BCB no expone
+    esto en una API, así que se scrapea la tabla pública que publica en su web."""
+    request = urllib.request.Request(BCB_BANCOS_URL, headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            if response.status != 200:
+                print(f"Advertencia: la página de bancos del BCB respondió HTTP {response.status}")
+                return None
+            html = response.read().decode("utf-8", errors="replace")
+    except urllib.error.URLError as exc:
+        print(f"Advertencia: no se pudo consultar la página de bancos del BCB: {exc}")
+        return None
+
+    tabla = re.search(r'class="tco-public-table".*?</table>', html, re.S)
+    if not tabla:
+        print("Advertencia: no se encontró la tabla de bancos en la página del BCB")
+        return None
+
+    filas = re.findall(
+        r"<tr[^>]*>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*<td>(.*?)</td>\s*</tr>",
+        tabla.group(0),
+        re.S,
+    )
+
+    bancos = []
+    for entidad_html, compra_html, monto_html, transacciones_html in filas:
+        entidad = entidad_html.strip()
+        if "TOTALES" in entidad or "PROMEDIO" in entidad:
+            continue
+        compra = _parse_numero_bo(compra_html)
+        if compra is None:
+            continue
+        transacciones = _parse_numero_bo(transacciones_html)
+        bancos.append(
+            {
+                "entidad": entidad,
+                "compra": compra,
+                "monto_usd": _parse_numero_bo(monto_html),
+                "transacciones": int(transacciones) if transacciones is not None else None,
+            }
+        )
+
+    if not bancos:
+        print("Advertencia: la tabla de bancos del BCB no tenía filas reconocibles")
+        return None
+
+    bancos.sort(key=lambda b: b["compra"], reverse=True)
+    return bancos
 
 
 def _fetch_binance_p2p_average(trade_type: str, rows: int = 10) -> tuple[float, int] | None:
@@ -166,10 +232,15 @@ def main() -> None:
 
     bcb_oficial = fetch_bcb_oficial()
     if bcb_oficial is not None:
-        snapshot["rates"]["BOB"] = bcb_oficial
+        snapshot["rates"]["BOB"] = bcb_oficial["compra"]
+        snapshot["bob_oficial"] = bcb_oficial
         snapshot["bob_fuente"] = "Banco Central de Bolivia (bcb.gob.bo)"
     else:
         snapshot["bob_fuente"] = f"{API_URL} (BCB no disponible, se usó respaldo)"
+
+    bcb_bancos = fetch_bcb_bancos()
+    if bcb_bancos is not None:
+        snapshot["bob_oficial_bancos"] = bcb_bancos
 
     bob_paralelo = fetch_bob_paralelo()
     if bob_paralelo is not None:
