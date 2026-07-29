@@ -5,7 +5,7 @@ Cron diario (GitHub Actions) que obtiene tipos de cambio contra el dólar (USD) 
 ## Cómo funciona
 
 1. El workflow [`.github/workflows/daily-rates.yml`](.github/workflows/daily-rates.yml) corre todos los días a las 12:00 UTC (~08:00 hora Bolivia), y también se puede disparar manualmente desde la pestaña *Actions* (`workflow_dispatch`).
-2. Ejecuta [`scripts/fetch-rates.mjs`](scripts/fetch-rates.mjs), que consulta una API pública gratuita ([open.er-api.com](https://www.exchangerate-api.com/docs/free), sin API key) con USD como moneda base.
+2. Ejecuta [`scripts/fetch_rates.py`](scripts/fetch_rates.py), que consulta una API pública gratuita ([open.er-api.com](https://www.exchangerate-api.com/docs/free), sin API key) con USD como moneda base.
 3. Guarda el resultado en:
    - `data/latest.json`: el último valor obtenido (se sobreescribe cada corrida).
    - `data/history/YYYY-MM-DD.json`: un snapshot por día, para tener histórico.
@@ -36,7 +36,7 @@ Cron diario (GitHub Actions) que obtiene tipos de cambio contra el dólar (USD) 
 
 ## Monedas incluidas
 
-Boliviano (BOB), peso argentino (ARS), real (BRL), peso chileno (CLP), peso colombiano (COP), sol peruano (PEN), peso uruguayo (UYU), peso mexicano (MXN) y euro (EUR). Para agregar o quitar monedas, editar el array `TRACKED_CURRENCIES` en `scripts/fetch-rates.mjs` (usar códigos ISO 4217).
+Boliviano (BOB), peso argentino (ARS), real (BRL), peso chileno (CLP), peso colombiano (COP), sol peruano (PEN), peso uruguayo (UYU), peso mexicano (MXN) y euro (EUR). Para agregar o quitar monedas, editar la lista `TRACKED_CURRENCIES` en `scripts/fetch_rates.py` (usar códigos ISO 4217).
 
 ## Sobre el tipo de cambio boliviano
 
@@ -45,7 +45,7 @@ Este cron usa el **tipo de cambio oficial** publicado por la API (equivalente al
 ## Correr localmente
 
 ```bash
-npm run fetch
+python3 scripts/fetch_rates.py
 ```
 
-Requiere Node.js >= 20 (usa `fetch` nativo, sin dependencias externas).
+Requiere Python >= 3.10 (usa `urllib` de la librería estándar, sin dependencias externas).
